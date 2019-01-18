@@ -1,79 +1,70 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>  
 <html>
-<body>
+<head>
+<style>
+.error {color: #FF0000;}
+</style>
+</head>
+<body>  
 
 <?php
-//List of existing accounts
-class Account
-{
-    function isThere($newaccount)
-    {
-       $length=count($account_list);
-        for($x=0;$x<$length;$x++)
-        {
-            if($newaccount == $account_list[$x]) 
-                echo "Account exist";
-        }
-        echo "Account is not in list";
+// define variables and set to empty values
+$nameErr = $emailErr = $genderErr = $websiteErr = "";
+$name = $email = $gender = $comment = $website = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["name"])) {
+    $nameErr = "Name is required";
+  } else {
+    $name = test_input($_POST["name"]);
+    // check if name only contains letters and whitespace
+    if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
+      $nameErr = "Only letters and white space allowed"; 
     }
+  }
+  
+  if (empty($_POST["email"])) {
+    $emailErr = "Email is required";
+  } else {
+    $email = test_input($_POST["email"]);
+    // check if e-mail address is well-formed
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $emailErr = "Invalid email format"; 
+    }
+  }
 }
-$account_list=array("abc","pqr","xyz");
-$obj=new Account();
-$obj->isThere("meena");
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
 ?>
 
-
-<form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>">
-  Name: <input type="text" name="fname"><span>*<?php echo $nameErr?></span><br><br>
-  Email:<input type="text" name="email"><span>*<?php echo $emailErr?></span><br><br>
-  <input type="submit"><br><br>
+<p><span class="error">* required field</span></p>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
+  Name: <input type="text" name="name">
+  <span class="error">* <?php echo $nameErr;?></span>
+  <br><br>
+  E-mail: <input type="text" name="email">
+  <span class="error">* <?php echo $emailErr;?></span>
+  <br><br>
+  <input type="submit" name="submit" value="Submit">  
 </form>
 
-
-
 <?php
-$nameErr=$emilErr="";
-
-function test_input($data)
-{
- $data=trim($data);
- $data=stripcslashes($data);
- $data=htmlspecialchars($data);
- return $data;
-}
-
-if($_SERVER["REQUEST_METHOD"]=="POST")
-{
-    if(empty($_POST('fname')))
-    {
-        $nameErr="Name is Required";
-    }
-    else{
-        $name=test_input($_POST('fname'));
-        if(!preg_match("/^[a-zA-Z ]*$/",$name))
-        {
-            $nameErr="letters and whitespces re allowed";
-        }
-    }
-
-    if(empty($_POST('email')))
-    {
-        $emailErr="Emiail is Required";
-    }   
-    else
-     {
-         $email = test_input($_POST["email"]);
-         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-              $emailErr = "Invalid email format"; 
-            }
-    } 
-}
-
-echo "<h2>Inputs:</h2>";
-echo $name."<br>";
+echo "<h2>Input:</h2>";
+echo $name;
+echo "<br>";
 echo $email;
-
-
+echo "<br>";
+echo $website;
+echo "<br>";
+echo $comment;
+echo "<br>";
+echo $gender;
 ?>
+
 </body>
 </html>
